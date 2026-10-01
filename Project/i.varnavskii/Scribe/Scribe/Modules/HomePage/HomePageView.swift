@@ -13,27 +13,19 @@ struct HomePageView: View {
     
     var body: some View {
         List {
-            ForEach(presenter.notes, id: \.title) { note in
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(note.title)
-                        .font(.headline)
-                    
-                    Text(
-                        Date(
-                            timeIntervalSince1970: TimeInterval(note.createdAt)
-                        ),
-                        format: .dateTime
-                            .day()
-                            .month()
-                            .year()
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            if let subjectTitle = presenter.subjectTitle {
+                Section("Предмет: \(subjectTitle)") {
+                    ForEach(presenter.notes, id: \.id) { note in
+                        noteRow(note)
+                    }
                 }
-                .padding(.vertical, 4)
+            } else {
+                ForEach(presenter.notes, id: \.id) { note in
+                    noteRow(note)
+                }
             }
         }
-        .navigationTitle("Конспекты")
+        .navigationTitle("Главная")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -46,5 +38,26 @@ struct HomePageView: View {
         .onAppear {
             presenter.onAppear()
         }
+    }
+    
+    @ViewBuilder
+    private func noteRow(_ note: Note) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(note.title)
+                .font(.headline)
+            
+            Text(
+                Date(
+                    timeIntervalSince1970: TimeInterval(note.createdAt)
+                ),
+                format: .dateTime
+                    .day()
+                    .month()
+                    .year()
+            )
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 4)
     }
 }

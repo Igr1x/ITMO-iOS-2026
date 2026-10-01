@@ -2,6 +2,8 @@
 //  SwiftDataNotesRepository.swift
 //  Scribe
 //
+//  Created by Варнавский Игорь Витальевич on 01.10.2026.
+//
 
 import Foundation
 import SwiftData
@@ -63,5 +65,18 @@ final class SwiftDataNotesRepository: NotesRepository {
         
         let models = (try? context.fetch(descriptor)) ?? []
         return models.map{ $0.entity }
+    }
+    
+    func delete(ids: [UUID]) {
+        let descriptor = FetchDescriptor<NoteModel>(
+            predicate: #Predicate { ids.contains($0.id) }
+        )
+
+        guard let models = try? context.fetch(descriptor) else {
+            return
+        }
+
+        models.forEach { context.delete($0) }
+        try? context.save()
     }
 }

@@ -9,11 +9,15 @@ enum HomePageAsm {
 
     static func build(
         appRouter: AppRouter,
-        notesRepo: NotesRepository
+        notesRepo: NotesRepository,
+        userDetailsRepo: UserDetailsRepository,
+        subjectRepo: SubjectRepository
     ) -> HomePageView {
 
         let interactor = HomePageInteractor(
-            notesRepo: notesRepo
+            notesRepo: notesRepo,
+            userDetailsRepo: userDetailsRepo,
+            subjectRepo: subjectRepo
         )
 
         let router = HomePageRouter(

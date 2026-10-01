@@ -14,6 +14,7 @@ final class HomePagePresenter {
     private let router: HomePageRouter
     
     var notes: [Note] = []
+    var subjectTitle: String?
     
     init(
         interactor: HomePageInteractor,
@@ -24,7 +25,16 @@ final class HomePagePresenter {
     }
     
     func onAppear() {
-        notes = interactor.getNotes(limit: 2)
+        let settings = interactor.getSettings()
+        
+        let all = interactor.getNotes(limit: settings.notesLimit)
+        if let subjectId = settings.subjectId {
+            notes = all.filter { $0.subjectId == subjectId }
+            subjectTitle = interactor.getSubject(id: subjectId)?.title
+        } else {
+            notes = all
+            subjectTitle = nil
+        }
     }
     
     func createNoteButtonTapped() {

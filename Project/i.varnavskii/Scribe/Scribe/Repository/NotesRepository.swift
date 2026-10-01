@@ -5,6 +5,8 @@
 //  Created by Варнавский Игорь Витальевич on 01.10.2026.
 //
 
+import Foundation
+
 protocol NotesRepository {
     func save(_ note: Note)
     
@@ -13,6 +15,8 @@ protocol NotesRepository {
     func delete(_ title: String)
     
     func getNotes(limit: Int, offset: Int) -> [Note]
+    
+    func delete(ids: [UUID])
 }
 
 final class StubNotesRepository : NotesRepository {
@@ -32,5 +36,11 @@ final class StubNotesRepository : NotesRepository {
     
     func getNotes(limit: Int, offset: Int) -> [Note] {
         return []
+    }
+    
+    func delete(ids: [UUID]) {
+        for (title, note) in notes where ids.contains(note.id) {
+            notes.removeValue(forKey: title)
+        }
     }
 }
