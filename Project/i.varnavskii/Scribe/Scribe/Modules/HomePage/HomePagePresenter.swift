@@ -24,7 +24,7 @@ final class HomePagePresenter {
     }
     
     func onAppear() {
-        notes = interactor.getNotes()
+        notes = interactor.getNotes(limit: 2)
     }
     
     func createNoteButtonTapped() {

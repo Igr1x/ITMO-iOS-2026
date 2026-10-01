@@ -7,4 +7,5 @@
 
 enum AppRoute {
     case createNote
+    case createSubject
 }

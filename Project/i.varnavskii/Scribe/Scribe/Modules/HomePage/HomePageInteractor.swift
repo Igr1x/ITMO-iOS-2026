@@ -15,4 +15,8 @@ final class HomePageInteractor {
     func getNotes() -> [Note] {
         return notesRepo.getNotes()
     }
+    
+    func getNotes(limit: Int, offset: Int = 0) -> [Note] {
+        return notesRepo.getNotes(limit: limit, offset: offset)
+    }
 }

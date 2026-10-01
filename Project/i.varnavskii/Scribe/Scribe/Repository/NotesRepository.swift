@@ -11,6 +11,8 @@ protocol NotesRepository {
     func getNotes() -> [Note]
     
     func delete(_ title: String)
+    
+    func getNotes(limit: Int, offset: Int) -> [Note]
 }
 
 final class StubNotesRepository : NotesRepository {
@@ -26,5 +28,9 @@ final class StubNotesRepository : NotesRepository {
     
     func delete(_ title: String) {
         notes.removeValue(forKey: title)
+    }
+    
+    func getNotes(limit: Int, offset: Int) -> [Note] {
+        return []
     }
 }

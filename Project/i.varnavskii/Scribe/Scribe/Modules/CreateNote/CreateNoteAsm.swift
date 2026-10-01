@@ -9,10 +9,14 @@ final class CreateNoteAsm {
     
     static func build(
         appRouter: AppRouter,
-        notesRepository: NotesRepository
+        notesRepository: NotesRepository,
+        subjectRepository: SubjectRepository
     ) -> CreateNoteView {
         
-        let interactor = CreateNoteInteractor(repo: notesRepository)
+        let interactor = CreateNoteInteractor(
+            repo: notesRepository,
+            subjectRepo: subjectRepository
+        )
         
         let router = CreateNoteRouter(appRouter: appRouter)
         

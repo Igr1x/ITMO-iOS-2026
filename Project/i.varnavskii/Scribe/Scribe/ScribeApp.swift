@@ -6,21 +6,37 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct ScribeApp: App {
 
     @State private var router = AppRouter()
-    
-    private let repository = StubNotesRepository()
+
+    private let container: ModelContainer
+
+    init() {
+        do {
+            container = try ModelContainer(
+                for: NoteModel.self,
+                SubjectModel.self
+            )
+        } catch {
+            fatalError("Не удалось создать ModelContainer: \(error)")
+        }
+    }
 
     var body: some Scene {
-        WindowGroup {
+        let context = container.mainContext
+        let notesRepo = SwiftDataNotesRepository(context: context)
+        let subjRepo = SwiftDataSubjectRepository(context: context)
+
+        return WindowGroup {
             NavigationStack(path: $router.path) {
 
                 HomePageAsm.build(
                     appRouter: router,
-                    notesRepo: repository
+                    notesRepo: notesRepo
                 )
                 .navigationDestination(for: AppRoute.self) { route in
                     switch route {
@@ -28,9 +44,17 @@ struct ScribeApp: App {
                     case .createNote:
                         CreateNoteAsm.build(
                             appRouter: router,
-                            notesRepository: repository
+                            notesRepository: notesRepo,
+                            subjectRepository: subjRepo
+                        )
+                    
+                    case .createSubject:
+                        CreateSubjectAsm.build(
+                            appRouter: router,
+                            subjectRepository: subjRepo
                         )
                     }
+                    
                 }
             }
         }
