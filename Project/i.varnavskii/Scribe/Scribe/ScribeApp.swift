@@ -17,7 +17,8 @@ struct ScribeApp: App {
         do {
             container = try ModelContainer(
                 for: NoteModel.self,
-                SubjectModel.self
+                SubjectModel.self,
+                CalendarEvent.self
             )
         } catch {
             fatalError("Не удалось создать ModelContainer: \(error)")
@@ -36,7 +37,8 @@ struct ScribeApp: App {
                 notesRepo: notesRepo,
                 subjRepo: subjRepo,
                 userDetailsRepo: userDetailsRepo,
-                notesSearchWorker: notesSearchWorker
+                notesSearchWorker: notesSearchWorker,
+                calendarRepository: CalendarEventRepository(container: container)
             )
         }
     }

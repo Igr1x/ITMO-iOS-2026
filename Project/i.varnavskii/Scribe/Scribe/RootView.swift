@@ -13,6 +13,7 @@ struct RootView: View {
     private let subjRepo: SubjectRepository
     private let userDetailsRepo: UserDetailsRepository
     private let notesSearchWorker: NotesSearchWorker
+    private let calendarRepository: CalendarEventRepository
     
     @State private var homeRouter = AppRouter()
     @State private var notesRouter = AppRouter()
@@ -21,12 +22,14 @@ struct RootView: View {
         notesRepo: NotesRepository,
         subjRepo: SubjectRepository,
         userDetailsRepo: UserDetailsRepository,
-        notesSearchWorker: NotesSearchWorker
+        notesSearchWorker: NotesSearchWorker,
+        calendarRepository: CalendarEventRepository
     ) {
         self.notesRepo = notesRepo
         self.subjRepo = subjRepo
         self.userDetailsRepo = userDetailsRepo
         self.notesSearchWorker = notesSearchWorker
+        self.calendarRepository = calendarRepository
     }
     
     var body: some View {
@@ -63,10 +66,10 @@ struct RootView: View {
             }
             
             NavigationStack {
-                ScheduleView()
+                ScheduleAsm.build(repository: calendarRepository)
             }
             .tabItem {
-                Label("Расписание", systemImage: "calendar")
+                Label("Календарь", systemImage: "calendar")
             }
             
             NavigationStack {
