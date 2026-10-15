@@ -12,6 +12,7 @@ struct RootView: View {
     private let notesRepo: NotesRepository
     private let subjRepo: SubjectRepository
     private let userDetailsRepo: UserDetailsRepository
+    private let notesSearchWorker: NotesSearchWorker
     
     @State private var homeRouter = AppRouter()
     @State private var notesRouter = AppRouter()
@@ -19,11 +20,13 @@ struct RootView: View {
     init(
         notesRepo: NotesRepository,
         subjRepo: SubjectRepository,
-        userDetailsRepo: UserDetailsRepository
+        userDetailsRepo: UserDetailsRepository,
+        notesSearchWorker: NotesSearchWorker
     ) {
         self.notesRepo = notesRepo
         self.subjRepo = subjRepo
         self.userDetailsRepo = userDetailsRepo
+        self.notesSearchWorker = notesSearchWorker
     }
     
     var body: some View {
@@ -46,7 +49,8 @@ struct RootView: View {
             NavigationStack(path: $notesRouter.path) {
                 NotesAsm.build(
                     notesRepo: notesRepo,
-                    subjectRepo: subjRepo
+                    subjectRepo: subjRepo,
+                    notesSearchWorker: notesSearchWorker
                 ) {
                     notesRouter.navigate(to: .createNote)
                 }

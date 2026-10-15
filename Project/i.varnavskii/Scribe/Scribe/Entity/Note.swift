@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Note {
+struct Note: Sendable {
     let id: UUID
     var title: String
     var subjectId: UUID

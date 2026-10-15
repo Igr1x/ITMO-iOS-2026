@@ -10,6 +10,7 @@ final class NotesAsm {
     static func build(
         notesRepo: NotesRepository,
         subjectRepo: SubjectRepository,
+        notesSearchWorker: NotesSearchWorker,
         onCreateNote: @escaping () -> Void
     ) -> NotesView {
         
@@ -18,7 +19,10 @@ final class NotesAsm {
             subjectRepo: subjectRepo
         )
         
-        let presenter = NotesPresenter(interactor: interactor)
+        let presenter = NotesPresenter(
+            interactor: interactor,
+            notesSearchWorker: notesSearchWorker
+        )
         
         return NotesView(
             presenter: presenter,

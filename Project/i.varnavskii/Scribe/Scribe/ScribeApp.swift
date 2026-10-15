@@ -29,12 +29,14 @@ struct ScribeApp: App {
         let notesRepo = SwiftDataNotesRepository(context: context)
         let subjRepo = SwiftDataSubjectRepository(context: context)
         let userDetailsRepo = UserDefaultsUserDetailsRepository()
+        let notesSearchWorker = NotesSearchWorker()
 
         return WindowGroup {
             RootView(
                 notesRepo: notesRepo,
                 subjRepo: subjRepo,
-                userDetailsRepo: userDetailsRepo
+                userDetailsRepo: userDetailsRepo,
+                notesSearchWorker: notesSearchWorker
             )
         }
     }

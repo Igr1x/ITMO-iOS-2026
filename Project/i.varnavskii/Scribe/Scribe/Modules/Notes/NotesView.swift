@@ -63,6 +63,9 @@ struct NotesView: View {
         .onAppear {
             presenter.onAppear()
         }
+        .onDisappear {
+            presenter.cancelSearch()
+        }
     }
     
     private var searchBinding: Binding<String> {
