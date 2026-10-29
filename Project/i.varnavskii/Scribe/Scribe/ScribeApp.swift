@@ -7,18 +7,34 @@
 
 import SwiftUI
 import SwiftData
+import Foundation
 
 @main
 struct ScribeApp: App {
 
     private let container: ModelContainer
+    private let calendarImportService: any CalendarImportService
 
     init() {
+        var isUITesting = false
+        var importService: any CalendarImportService = GoogleCalendarImportService()
+        #if DEBUG
+        isUITesting = ProcessInfo.processInfo.arguments.contains("--ui-testing")
+        if isUITesting,
+           let value = ProcessInfo.processInfo.environment["UI_TEST_CALENDAR_IMPORT"],
+           let scenario = StubCalendarImportService.Scenario(rawValue: value) {
+            importService = StubCalendarImportService(scenario: scenario)
+        }
+        #endif
+        calendarImportService = importService
+
         do {
+            let configuration = ModelConfiguration(isStoredInMemoryOnly: isUITesting)
             container = try ModelContainer(
                 for: NoteModel.self,
                 SubjectModel.self,
-                CalendarEvent.self
+                CalendarEvent.self,
+                configurations: configuration
             )
         } catch {
             fatalError("Не удалось создать ModelContainer: \(error)")
@@ -38,7 +54,8 @@ struct ScribeApp: App {
                 subjRepo: subjRepo,
                 userDetailsRepo: userDetailsRepo,
                 notesSearchWorker: notesSearchWorker,
-                calendarRepository: CalendarEventRepository(container: container)
+                calendarRepository: CalendarEventRepository(container: container),
+                calendarImportService: calendarImportService
             )
         }
     }

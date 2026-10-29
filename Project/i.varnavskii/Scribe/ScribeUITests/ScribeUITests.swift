@@ -2,7 +2,7 @@
 //  ScribeUITests.swift
 //  ScribeUITests
 //
-//  Created by Варнавский Игорь Витальевич on 01.10.2026.
+//  Created by Варнавский Игорь Витальевич on 22.10.2026.
 //
 
 import XCTest
@@ -10,34 +10,52 @@ import XCTest
 final class ScribeUITests: XCTestCase {
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testCalendarImportOpensAndCloses() {
         let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // XCUIAutomation Documentation
-        // https://developer.apple.com/documentation/xcuiautomation
+        let calendarTab = app.tabBars.buttons["Календарь"]
+        XCTAssertTrue(calendarTab.waitForExistence(timeout: 5))
+        calendarTab.tap()
+        let importButton = app.buttons["calendar.openImport"]
+        XCTAssertTrue(importButton.waitForExistence(timeout: 5))
+        importButton.tap()
+
+        let importPage = app.navigationBars["Импорт календаря"]
+        XCTAssertTrue(importPage.waitForExistence(timeout: 5))
+
+        app.buttons["calendarImport.close"].tap()
+        XCTAssertTrue(importPage.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(importButton.waitForExistence(timeout: 5))
     }
 
     @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
-        }
+    func testValidLinkEnablesDownloadButton() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing"]
+        app.launch()
+        let calendarTab = app.tabBars.buttons["Календарь"]
+        XCTAssertTrue(calendarTab.waitForExistence(timeout: 5))
+        calendarTab.tap()
+        let importButton = app.buttons["calendar.openImport"]
+        XCTAssertTrue(importButton.waitForExistence(timeout: 5))
+        importButton.tap()
+
+        let downloadButton = app.buttons["calendarImport.download"]
+        XCTAssertTrue(downloadButton.waitForExistence(timeout: 5))
+        XCTAssertFalse(downloadButton.isEnabled)
+
+        let linkField = app.descendants(matching: .any)
+            .matching(identifier: "calendarImport.link").firstMatch
+        XCTAssertTrue(linkField.waitForExistence(timeout: 5))
+        linkField.tap()
+        linkField.typeText("https://calendar.google.com/calendar/ical/student%40gmail.com/public/basic.ics")
+
+        XCTAssertTrue(downloadButton.isEnabled)
     }
 }

@@ -60,6 +60,7 @@ struct ScheduleView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("Импорт", systemImage: "square.and.arrow.down", action: openImport)
+                    .accessibilityIdentifier("calendar.openImport")
             }
         }
         .onAppear { presenter.reload() }

@@ -10,11 +10,12 @@ import Foundation
 enum CalendarImportAsm {
     static func build(
         repository: CalendarEventRepository,
+        service: any CalendarImportService = GoogleCalendarImportService(),
         onImported: @escaping (Date?) -> Void
     ) -> CalendarImportView {
         let interactor = CalendarImportInteractor(
             repository: repository,
-            service: GoogleCalendarImportService()
+            service: service
         )
         let presenter = CalendarImportPresenter(interactor: interactor)
 

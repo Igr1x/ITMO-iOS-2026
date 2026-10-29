@@ -14,6 +14,7 @@ struct RootView: View {
     private let userDetailsRepo: UserDetailsRepository
     private let notesSearchWorker: NotesSearchWorker
     private let calendarRepository: CalendarEventRepository
+    private let calendarImportService: any CalendarImportService
     
     @State private var homeRouter = AppRouter()
     @State private var notesRouter = AppRouter()
@@ -23,13 +24,15 @@ struct RootView: View {
         subjRepo: SubjectRepository,
         userDetailsRepo: UserDetailsRepository,
         notesSearchWorker: NotesSearchWorker,
-        calendarRepository: CalendarEventRepository
+        calendarRepository: CalendarEventRepository,
+        calendarImportService: any CalendarImportService = GoogleCalendarImportService()
     ) {
         self.notesRepo = notesRepo
         self.subjRepo = subjRepo
         self.userDetailsRepo = userDetailsRepo
         self.notesSearchWorker = notesSearchWorker
         self.calendarRepository = calendarRepository
+        self.calendarImportService = calendarImportService
     }
     
     var body: some View {
@@ -66,7 +69,7 @@ struct RootView: View {
             }
             
             NavigationStack {
-                ScheduleAsm.build(repository: calendarRepository)
+                ScheduleAsm.build(repository: calendarRepository, importService: calendarImportService)
             }
             .tabItem {
                 Label("Календарь", systemImage: "calendar")

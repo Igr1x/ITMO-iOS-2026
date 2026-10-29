@@ -50,6 +50,7 @@ struct CalendarImportView: View {
                             presenter.download()
                         }
                         .disabled(!presenter.canDownload)
+                        .accessibilityIdentifier("calendarImport.download")
                     }
                 }
                 if let preview = presenter.preview {
@@ -57,12 +58,14 @@ struct CalendarImportView: View {
                 }
             }
         }
+        .scrollDismissesKeyboard(.immediately)
         .navigationTitle("Импорт календаря")
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(presenter.result == nil ? "Закрыть" : "Готово") {
                     finish()
                 }
+                .accessibilityIdentifier("calendarImport.close")
             }
         }
         .onChange(of: presenter.link) { _, _ in
@@ -88,6 +91,7 @@ struct CalendarImportView: View {
                 .autocorrectionDisabled()
                 .privacySensitive()
                 .accessibilityLabel("Ссылка iCal из Google Calendar")
+                .accessibilityIdentifier("calendarImport.link")
         } header: {
             Text("Ссылка iCal")
         }
