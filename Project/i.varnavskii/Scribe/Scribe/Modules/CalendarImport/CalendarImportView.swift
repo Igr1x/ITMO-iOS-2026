@@ -111,8 +111,11 @@ struct CalendarImportView: View {
             LabeledContent("Календарь", value: preview.calendarName)
             LabeledContent("Найдено событий", value: "\(preview.events.count)")
             if preview.skippedEvents > 0 {
-                Label("Пропущено записей: \(preview.skippedEvents). Повторы и некоторые форматы событий пока не поддерживаются.",
-                      systemImage: "exclamationmark.triangle")
+                Label(
+                    "Пропущено записей: \(preview.skippedEvents). " +
+                    "Повторы и некоторые форматы событий пока не поддерживаются.",
+                    systemImage: "exclamationmark.triangle"
+                )
                     .foregroundStyle(.orange)
             }
             if preview.events.isEmpty {

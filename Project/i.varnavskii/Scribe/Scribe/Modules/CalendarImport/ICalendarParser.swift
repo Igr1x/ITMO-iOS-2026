@@ -12,7 +12,7 @@ nonisolated struct ICalendarParser {
         guard let text = String(data: data, encoding: .utf8) else {
             throw CalendarImportError.invalidCalendar
         }
-    
+
         let calendar = text.replacingOccurrences(of: "\r\n", with: "\n")
             .replacingOccurrences(of: "\n ", with: "")
             .replacingOccurrences(of: "\n\t", with: "")
@@ -37,45 +37,50 @@ nonisolated struct ICalendarParser {
             }
             let fields = readFields(String(block[..<end.lowerBound]))
             if fields["STATUS"]?.value == "CANCELLED" { continue }
-            if ["RRULE", "RDATE", "EXDATE", "RECURRENCE-ID", "DURATION"].contains(where: { fields[$0] != nil }) {
+            guard let event = parseEvent(fields, calendarID: calendarID, timezone: timezone) else {
                 skipped += 1
                 continue
             }
-            guard let uid = fields["UID"]?.value, !uid.isEmpty,
-                  let startField = fields["DTSTART"],
-                  let start = parseDate(startField, timezone: timezone) else {
-                skipped += 1
-                continue
-            }
-            let allDay = startField.value.count == 8
-            let finish: Date
-            if let endField = fields["DTEND"] {
-                guard (endField.value.count == 8) == allDay,
-                      let date = parseDate(endField, timezone: timezone), date >= start else {
-                    skipped += 1
-                    continue
-                }
-                finish = date
-            } else {
-                finish = allDay ? Calendar.current.date(byAdding: .day, value: 1, to: start)! : start
-            }
-            
-            guard start < interval.end,
-                  finish > interval.start || (finish == start && start >= interval.start) else { continue }
-            let title = fields["SUMMARY"]?.value ?? ""
-            events.append(CalendarEventModel(
-                id: "\(calendarID.utf8.count):\(calendarID)\(uid.utf8.count):\(uid):single",
-                title: title.isEmpty ? "Без названия" : unescape(title),
-                startDate: start,
-                endDate: finish,
-                isAllDay: allDay,
-                googleEventId: uid,
-                googleCalendarId: calendarID
-            ))
+            guard event.startDate < interval.end,
+                  event.endDate > interval.start ||
+                  (event.endDate == event.startDate && event.startDate >= interval.start) else { continue }
+            events.append(event)
         }
         return CalendarImportPreview(calendarName: unescape(String(name)),
                                      events: events.sorted { $0.startDate < $1.startDate },
                                      skippedEvents: skipped)
+    }
+
+    private func parseEvent(
+        _ fields: [String: (header: String, value: String)],
+        calendarID: String,
+        timezone: TimeZone
+    ) -> CalendarEventModel? {
+        if ["RRULE", "RDATE", "EXDATE", "RECURRENCE-ID", "DURATION"].contains(where: { fields[$0] != nil }) {
+            return nil
+        }
+        guard let uid = fields["UID"]?.value, !uid.isEmpty,
+              let startField = fields["DTSTART"],
+              let start = parseDate(startField, timezone: timezone) else { return nil }
+        let allDay = startField.value.count == 8
+        let finish: Date
+        if let endField = fields["DTEND"] {
+            guard (endField.value.count == 8) == allDay,
+                  let date = parseDate(endField, timezone: timezone), date >= start else { return nil }
+            finish = date
+        } else {
+            finish = allDay ? Calendar.current.date(byAdding: .day, value: 1, to: start)! : start
+        }
+        let title = fields["SUMMARY"]?.value ?? ""
+        return CalendarEventModel(
+            id: "\(calendarID.utf8.count):\(calendarID)\(uid.utf8.count):\(uid):single",
+            title: title.isEmpty ? "Без названия" : unescape(title),
+            startDate: start,
+            endDate: finish,
+            isAllDay: allDay,
+            googleEventId: uid,
+            googleCalendarId: calendarID
+        )
     }
 
     private func readFields(_ block: String) -> [String: (header: String, value: String)] {
@@ -114,7 +119,8 @@ nonisolated struct ICalendarParser {
                 formatter.timeZone = zone
             }
         }
-        guard let date = formatter.date(from: field.value), formatter.string(from: date) == field.value else { return nil }
+        guard let date = formatter.date(from: field.value),
+              formatter.string(from: date) == field.value else { return nil }
         return date
     }
 

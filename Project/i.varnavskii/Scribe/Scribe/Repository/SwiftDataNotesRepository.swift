@@ -54,19 +54,19 @@ final class SwiftDataNotesRepository: NotesRepository {
         models.forEach { context.delete($0) }
         try? context.save()
     }
-    
+
     func getNotes(limit: Int, offset: Int) -> [Note] {
         var descriptor = FetchDescriptor<NoteModel>(
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
         descriptor.fetchLimit = limit
         descriptor.fetchOffset = offset
-        
-        
+
+
         let models = (try? context.fetch(descriptor)) ?? []
         return models.map{ $0.entity }
     }
-    
+
     func delete(ids: [UUID]) {
         let descriptor = FetchDescriptor<NoteModel>(
             predicate: #Predicate { ids.contains($0.id) }

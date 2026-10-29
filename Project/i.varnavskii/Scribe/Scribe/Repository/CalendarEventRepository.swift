@@ -17,7 +17,7 @@ final class CalendarEventRepository {
     private let context: ModelContext
 
     init(container: ModelContainer) {
-        
+
         context = ModelContext(container)
         context.autosaveEnabled = false
     }

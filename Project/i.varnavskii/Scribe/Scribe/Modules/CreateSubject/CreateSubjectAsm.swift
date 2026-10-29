@@ -6,21 +6,21 @@
 //
 
 final class CreateSubjectAsm {
-    
+
     static func build(
         appRouter: AppRouter,
         subjectRepository: SubjectRepository
     ) -> CreateSubjectView {
-        
+
         let interactor = CreateSubjectInteractor(subjectRepo: subjectRepository)
-        
+
         let router = CreateSubjectRouter(router: appRouter)
-        
+
         let presenter = CreateSubjectPresenter(
             interactor: interactor,
             router: router
         )
-        
+
         return CreateSubjectView(presenter: presenter)
     }
 }

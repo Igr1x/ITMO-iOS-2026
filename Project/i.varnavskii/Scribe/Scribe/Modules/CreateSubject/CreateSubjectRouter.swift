@@ -7,11 +7,11 @@
 
 final class CreateSubjectRouter {
     private let appRouter: AppRouter
-    
+
     init(router: AppRouter) {
         self.appRouter = router
     }
-    
+
     func back() {
         appRouter.back()
     }

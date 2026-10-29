@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct SettingsView: View {
-    
+
     let presenter: SettingsPresenter
-    
+
     var body: some View {
         Form {
             Section("Конспекты на главной") {
@@ -23,7 +23,7 @@ struct SettingsView: View {
                     in: 1...presenter.maxNotesLimit
                 )
             }
-            
+
             Section("Предмет") {
                 Menu {
                     Button {
@@ -35,7 +35,7 @@ struct SettingsView: View {
                             Text("Все предметы")
                         }
                     }
-                    
+
                     ForEach(presenter.subjects, id: \.id) { subject in
                         Button {
                             presenter.selectSubject(subject)
@@ -58,7 +58,7 @@ struct SettingsView: View {
                     }
                 }
             }
-            
+
             Section {
                 Button("Сохранить") {
                     presenter.save()
@@ -70,7 +70,7 @@ struct SettingsView: View {
             presenter.onAppear()
         }
     }
-    
+
     private var selectedSubjectTitle: String {
         guard let id = presenter.selectedSubjectId,
               let subject = presenter.subjects.first(where: { $0.id == id })

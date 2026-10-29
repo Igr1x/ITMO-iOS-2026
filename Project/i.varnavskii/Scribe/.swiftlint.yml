@@ -1,0 +1,25 @@
+only_rules:
+  - trailing_whitespace
+  - trailing_newline
+  - colon
+  - comma
+  - line_length
+  - function_body_length
+  - identifier_name
+  - function_parameter_count
+
+line_length: 120
+
+function_body_length: 40
+
+function_parameter_count: 5
+
+identifier_name:
+  min_length: 3
+
+included:
+  - Scribe
+  - ScribeTests
+  - ScribeUITests
+
+reporter: xcode

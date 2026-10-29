@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct RootView: View {
-    
+
     private let notesRepo: NotesRepository
     private let subjRepo: SubjectRepository
     private let userDetailsRepo: UserDetailsRepository
     private let notesSearchWorker: NotesSearchWorker
     private let calendarRepository: CalendarEventRepository
     private let calendarImportService: any CalendarImportService
-    
+
     @State private var homeRouter = AppRouter()
     @State private var notesRouter = AppRouter()
-    
+
     init(
         notesRepo: NotesRepository,
         subjRepo: SubjectRepository,
@@ -34,7 +34,7 @@ struct RootView: View {
         self.calendarRepository = calendarRepository
         self.calendarImportService = calendarImportService
     }
-    
+
     var body: some View {
         TabView {
             NavigationStack(path: $homeRouter.path) {
@@ -51,7 +51,7 @@ struct RootView: View {
             .tabItem {
                 Label("Главная", systemImage: "house")
             }
-            
+
             NavigationStack(path: $notesRouter.path) {
                 NotesAsm.build(
                     notesRepo: notesRepo,
@@ -67,14 +67,14 @@ struct RootView: View {
             .tabItem {
                 Label("Конспекты", systemImage: "book")
             }
-            
+
             NavigationStack {
                 ScheduleAsm.build(repository: calendarRepository, importService: calendarImportService)
             }
             .tabItem {
                 Label("Календарь", systemImage: "calendar")
             }
-            
+
             NavigationStack {
                 SettingsAsm.build(
                     userDetailsRepo: userDetailsRepo,
@@ -86,7 +86,7 @@ struct RootView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func destination(
         for route: AppRoute,

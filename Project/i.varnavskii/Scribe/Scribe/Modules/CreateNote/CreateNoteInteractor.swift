@@ -8,10 +8,10 @@
 import Foundation
 
 final class CreateNoteInteractor {
-    
+
     private let repo: NotesRepository
     private let subjectRepo: SubjectRepository
-    
+
     init(
         repo: NotesRepository,
         subjectRepo: SubjectRepository
@@ -19,11 +19,11 @@ final class CreateNoteInteractor {
         self.repo = repo
         self.subjectRepo = subjectRepo
     }
-    
+
     func getSubjects() -> [Subject] {
         return subjectRepo.getAll().sorted { $0.title < $1.title }
     }
-    
+
     func createNote(_ title: String, subjectId: UUID) {
         repo.save(
             Note(

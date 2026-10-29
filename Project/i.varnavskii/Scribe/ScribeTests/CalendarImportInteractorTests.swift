@@ -20,7 +20,7 @@ final class CalendarImportInteractorTests: XCTestCase {
         let interval = DateInterval(start: Date(timeIntervalSince1970: 0), duration: 86_400)
 
         let result = try await interactor.loadPreview(link: link, interval: interval)
-        
+
         let callCount = await mock.callCount
         let receivedLink = await mock.receivedLink
         let receivedInterval = await mock.receivedInterval

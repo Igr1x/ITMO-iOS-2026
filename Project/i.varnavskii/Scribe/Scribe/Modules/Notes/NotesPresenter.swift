@@ -29,10 +29,10 @@ final class NotesPresenter {
 
     private var allNotes: [Note] = []
     private var allSubjects: [Subject] = []
-    
+
     @ObservationIgnored
     private var searchTask: Task<Void, Never>?
-    
+
     @ObservationIgnored
     private var searchTaskVersion: Int = 0
 
@@ -49,7 +49,7 @@ final class NotesPresenter {
         allSubjects = interactor.getSubjects()
         startSearch()
     }
-    
+
     func cancelSearch() {
         searchTask?.cancel()
         searchTask = nil
@@ -98,7 +98,7 @@ final class NotesPresenter {
         isSelectionMode = false
         onAppear()
     }
-    
+
     private func startSearch() {
         searchTask?.cancel()
         searchTaskVersion += 1
@@ -106,7 +106,7 @@ final class NotesPresenter {
         let currentNotes = allNotes
         let currentSubj = allSubjects
         let currentQuery = query
-        
+
         searchTask = Task {
             do {
                 let result = try await notesSearchWorker.search(

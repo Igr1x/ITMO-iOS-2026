@@ -6,10 +6,10 @@
 //
 
 final class CreateSubjectPresenter {
-    
+
     private let interactor: CreateSubjectInteractor
     private let router: CreateSubjectRouter
-    
+
     init(
         interactor: CreateSubjectInteractor,
         router: CreateSubjectRouter
@@ -17,14 +17,14 @@ final class CreateSubjectPresenter {
         self.interactor = interactor
         self.router = router
     }
-    
+
     func createSubject(title: String) {
         interactor.saveSubject(title: title)
         router.back()
     }
-    
+
     func back() {
         router.back()
     }
-    
+
 }

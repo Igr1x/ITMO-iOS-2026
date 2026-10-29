@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct NotesView: View {
-    
+
     let presenter: NotesPresenter
     let onCreateNote: () -> Void
-    
+
     var body: some View {
         List {
             ForEach(presenter.groups) { group in
@@ -42,7 +42,7 @@ struct NotesView: View {
                     .disabled(presenter.groups.isEmpty)
                 }
             }
-            
+
             ToolbarItem(placement: .topBarTrailing) {
                 if presenter.isSelectionMode {
                     Button(role: .destructive) {
@@ -67,14 +67,14 @@ struct NotesView: View {
             presenter.cancelSearch()
         }
     }
-    
+
     private var searchBinding: Binding<String> {
         Binding(
             get: { presenter.query },
             set: { presenter.setQuery($0) }
         )
     }
-    
+
     @ViewBuilder
     private func header(for group: NotesGroup) -> some View {
         Button {
@@ -96,7 +96,7 @@ struct NotesView: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     @ViewBuilder
     private func row(for note: Note) -> some View {
         HStack {
@@ -108,7 +108,7 @@ struct NotesView: View {
                 )
                 .foregroundStyle(.tint)
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(note.title)
                     .font(.headline)
@@ -124,7 +124,7 @@ struct NotesView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
-            
+
             Spacer()
         }
         .contentShape(Rectangle())

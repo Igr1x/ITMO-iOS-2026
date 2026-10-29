@@ -6,7 +6,7 @@
 //
 
 final class CreateNoteRouter {
-    
+
     private let appRouter: AppRouter
 
     init(appRouter: AppRouter) {
@@ -16,7 +16,7 @@ final class CreateNoteRouter {
     func back() {
         appRouter.back()
     }
-    
+
     func openCreateSubj() {
         appRouter.navigate(to: .createSubject)
     }

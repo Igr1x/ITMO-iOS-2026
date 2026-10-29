@@ -8,13 +8,13 @@
 import Foundation
 
 final class CreateSubjectInteractor {
-    
+
     private let subjectRepo: SubjectRepository
-    
+
     init(subjectRepo: SubjectRepository) {
         self.subjectRepo = subjectRepo
     }
-    
+
     func saveSubject(title: String) {
         subjectRepo.save(
             Subject(
@@ -22,6 +22,6 @@ final class CreateSubjectInteractor {
                 title: title
             )
         )
-        
+
     }
 }

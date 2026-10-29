@@ -98,12 +98,18 @@ struct CalendarEventTimeView: View {
             if Calendar.current.isDate(start, inSameDayAs: lastDay) {
                 Text("Весь день")
             } else {
-                Text("Весь день · \(start.formatted(date: .abbreviated, time: .omitted)) — \(lastDay.formatted(date: .abbreviated, time: .omitted))")
+                let startLabel = start.formatted(date: .abbreviated, time: .omitted)
+                let lastDayLabel = lastDay.formatted(date: .abbreviated, time: .omitted)
+                Text("Весь день · \(startLabel) — \(lastDayLabel)")
             }
         } else if Calendar.current.isDate(start, inSameDayAs: end) {
-            Text("\(start.formatted(date: .omitted, time: .shortened)) — \(end.formatted(date: .omitted, time: .shortened))")
+            let startLabel = start.formatted(date: .omitted, time: .shortened)
+            let endLabel = end.formatted(date: .omitted, time: .shortened)
+            Text("\(startLabel) — \(endLabel)")
         } else {
-            Text("\(start.formatted(date: .abbreviated, time: .shortened)) — \(end.formatted(date: .abbreviated, time: .shortened))")
+            let startLabel = start.formatted(date: .abbreviated, time: .shortened)
+            let endLabel = end.formatted(date: .abbreviated, time: .shortened)
+            Text("\(startLabel) — \(endLabel)")
         }
     }
 }

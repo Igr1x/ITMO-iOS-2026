@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct HomePageView: View {
-    
+
     let presenter: HomePagePresenter
-    
+
     var body: some View {
         List {
             if let subjectTitle = presenter.subjectTitle {
@@ -39,13 +39,13 @@ struct HomePageView: View {
             presenter.onAppear()
         }
     }
-    
+
     @ViewBuilder
     private func noteRow(_ note: Note) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(note.title)
                 .font(.headline)
-            
+
             Text(
                 Date(
                     timeIntervalSince1970: TimeInterval(note.createdAt)
