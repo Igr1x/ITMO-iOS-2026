@@ -16,4 +16,8 @@ final class HomePageRouter {
     func openCreateNote() {
         appRouter.navigate(to: .createNote)
     }
+
+    func openNote(_ note: Note) {
+        appRouter.navigate(to: .editNote(note))
+    }
 }

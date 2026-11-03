@@ -20,4 +20,9 @@ final class CreateNoteRouter {
     func openCreateSubj() {
         appRouter.navigate(to: .createSubject)
     }
+
+    func openNote(_ note: Note) {
+        appRouter.back()
+        appRouter.navigate(to: .editNote(note))
+    }
 }

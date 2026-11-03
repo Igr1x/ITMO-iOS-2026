@@ -24,14 +24,14 @@ final class CreateNoteInteractor {
         return subjectRepo.getAll().sorted { $0.title < $1.title }
     }
 
-    func createNote(_ title: String, subjectId: UUID) {
-        repo.save(
-            Note(
-                id: UUID(),
-                title: title,
-                subjectId: subjectId,
-                createdAt: Int(Date().timeIntervalSince1970)
-            )
+    func createNote(_ title: String, subjectId: UUID) throws -> Note {
+        let note = Note(
+            id: UUID(),
+            title: title,
+            subjectId: subjectId,
+            createdAt: Int(Date().timeIntervalSince1970)
         )
+        try repo.save(note)
+        return note
     }
 }

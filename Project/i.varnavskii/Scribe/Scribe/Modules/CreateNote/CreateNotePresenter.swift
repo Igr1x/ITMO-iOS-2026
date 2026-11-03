@@ -5,6 +5,7 @@
 //  Created by Варнавский Игорь Витальевич on 01.10.2026.
 //
 
+import Foundation
 import Observation
 
 @Observable
@@ -15,6 +16,7 @@ final class CreateNotePresenter {
 
     var subjects: [Subject] = []
     var selectedSubject: Subject?
+    var errorMessage: String?
 
     init(
         interactor: CreateNoteInteractor,
@@ -36,10 +38,16 @@ final class CreateNotePresenter {
     }
 
     func saveButtonTapped(title: String) {
-        guard let selectedSubject else {
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let selectedSubject, !trimmed.isEmpty else {
             return
         }
-        interactor.createNote(title, subjectId: selectedSubject.id)
+        do {
+            let note = try interactor.createNote(trimmed, subjectId: selectedSubject.id)
+            router.openNote(note)
+        } catch {
+            errorMessage = "Не удалось создать конспект: \(error.localizedDescription)"
+        }
     }
 
     func backButtonTapped() {

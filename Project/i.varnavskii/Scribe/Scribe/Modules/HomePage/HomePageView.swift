@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomePageView: View {
 
-    let presenter: HomePagePresenter
+    @State var presenter: HomePagePresenter
 
     var body: some View {
         List {
@@ -59,5 +59,7 @@ struct HomePageView: View {
             .foregroundStyle(.secondary)
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
+        .onTapGesture { presenter.openNote(note) }
     }
 }

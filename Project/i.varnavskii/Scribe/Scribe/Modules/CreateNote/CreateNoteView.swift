@@ -10,7 +10,7 @@ import SwiftUI
 struct CreateNoteView: View {
     @State private var title: String = ""
 
-    let presenter: CreateNotePresenter
+    @State var presenter: CreateNotePresenter
 
     var body: some View {
         VStack(spacing: 20) {
@@ -46,17 +46,22 @@ struct CreateNoteView: View {
                 }
             }
 
-            Button("Сохранить") {
+            Button("Создать") {
                 presenter.saveButtonTapped(title: title)
-                title = ""
             }
             .buttonStyle(.borderedProminent)
-            .disabled(title.isEmpty || presenter.selectedSubject == nil)
+            .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || presenter.selectedSubject == nil)
 
             Spacer()
         }
         .padding()
         .navigationTitle("Новый конспект")
+        .alert("Ошибка", isPresented: Binding(
+            get: { presenter.errorMessage != nil },
+            set: { if !$0 { presenter.errorMessage = nil } }
+        )) {
+            Button("Закрыть", role: .cancel) { presenter.errorMessage = nil }
+        } message: { Text(presenter.errorMessage ?? "") }
         .navigationBarBackButtonHidden()
         .onAppear {
             presenter.onAppear()

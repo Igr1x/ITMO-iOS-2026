@@ -19,6 +19,7 @@ final class NotesPresenter {
 
     private let interactor: NotesInteractor
     private let notesSearchWorker: NotesSearchWorker
+    private let router: NotesRouter
 
     var query: String = ""
     var groups: [NotesGroup] = []
@@ -26,6 +27,8 @@ final class NotesPresenter {
 
     var isSelectionMode: Bool = false
     var selectedNoteIds: Set<UUID> = []
+    var isDeleting = false
+    var errorMessage: String?
 
     private var allNotes: [Note] = []
     private var allSubjects: [Subject] = []
@@ -38,10 +41,12 @@ final class NotesPresenter {
 
     init(
         interactor: NotesInteractor,
-        notesSearchWorker: NotesSearchWorker
+        notesSearchWorker: NotesSearchWorker,
+        router: NotesRouter
     ) {
         self.interactor = interactor
         self.notesSearchWorker = notesSearchWorker
+        self.router = router
     }
 
     func onAppear() {
@@ -90,13 +95,30 @@ final class NotesPresenter {
 
     func deleteSelected() {
         let ids = Array(selectedNoteIds)
-        guard !ids.isEmpty else {
+        guard !ids.isEmpty, !isDeleting else {
             return
         }
-        interactor.deleteNotes(ids: ids)
-        selectedNoteIds.removeAll()
-        isSelectionMode = false
-        onAppear()
+        isDeleting = true
+        cancelSearch()
+        Task {
+            do {
+                try await interactor.deleteNotes(ids: ids)
+            } catch {
+                errorMessage = "Не удалось завершить удаление: \(error.localizedDescription)"
+            }
+            selectedNoteIds.removeAll()
+            isSelectionMode = false
+            isDeleting = false
+            onAppear()
+        }
+    }
+
+    func createNoteButtonTapped() {
+        router.openCreateNote()
+    }
+
+    func openNote(_ note: Note) {
+        router.openNote(note)
     }
 
     private func startSearch() {

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol NotesRepository {
-    func save(_ note: Note)
+    func save(_ note: Note) throws
 
     func getNotes() -> [Note]
 
@@ -16,7 +16,7 @@ protocol NotesRepository {
 
     func getNotes(limit: Int, offset: Int) -> [Note]
 
-    func delete(ids: [UUID])
+    func delete(ids: [UUID]) throws
 }
 
 final class StubNotesRepository: NotesRepository {

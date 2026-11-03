@@ -41,4 +41,8 @@ final class HomePagePresenter {
         router.openCreateNote()
     }
 
+    func openNote(_ note: Note) {
+        router.openNote(note)
+    }
+
 }

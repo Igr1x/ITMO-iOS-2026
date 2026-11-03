@@ -9,8 +9,7 @@ import SwiftUI
 
 struct NotesView: View {
 
-    let presenter: NotesPresenter
-    let onCreateNote: () -> Void
+    @State var presenter: NotesPresenter
 
     var body: some View {
         List {
@@ -27,6 +26,13 @@ struct NotesView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .disabled(presenter.isDeleting)
+        .alert("Ошибка", isPresented: Binding(
+            get: { presenter.errorMessage != nil },
+            set: { if !$0 { presenter.errorMessage = nil } }
+        )) {
+            Button("Закрыть", role: .cancel) { presenter.errorMessage = nil }
+        } message: { Text(presenter.errorMessage ?? "") }
         .searchable(text: searchBinding, prompt: "Поиск конспекта")
         .navigationTitle("Конспекты")
         .toolbar {
@@ -53,7 +59,7 @@ struct NotesView: View {
                     .disabled(presenter.selectedNoteIds.isEmpty)
                 } else {
                     Button {
-                        onCreateNote()
+                        presenter.createNoteButtonTapped()
                     } label: {
                         Image(systemName: "plus")
                     }
@@ -131,6 +137,8 @@ struct NotesView: View {
         .onTapGesture {
             if presenter.isSelectionMode {
                 presenter.toggleNoteSelection(note.id)
+            } else {
+                presenter.openNote(note)
             }
         }
     }

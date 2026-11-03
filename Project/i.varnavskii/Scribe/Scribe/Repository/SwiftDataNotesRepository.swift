@@ -16,13 +16,13 @@ final class SwiftDataNotesRepository: NotesRepository {
         self.context = context
     }
 
-    func save(_ note: Note) {
+    func save(_ note: Note) throws {
         let noteId = note.id
         let descriptor = FetchDescriptor<NoteModel>(
             predicate: #Predicate { $0.id == noteId }
         )
 
-        if let existing = try? context.fetch(descriptor).first {
+        if let existing = try context.fetch(descriptor).first {
             existing.title = note.title
             existing.subjectId = note.subjectId
             existing.createdAt = note.createdAt
@@ -30,7 +30,12 @@ final class SwiftDataNotesRepository: NotesRepository {
             context.insert(NoteModel(note: note))
         }
 
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            throw error
+        }
     }
 
     func getNotes() -> [Note] {
@@ -67,16 +72,18 @@ final class SwiftDataNotesRepository: NotesRepository {
         return models.map{ $0.entity }
     }
 
-    func delete(ids: [UUID]) {
+    func delete(ids: [UUID]) throws {
         let descriptor = FetchDescriptor<NoteModel>(
             predicate: #Predicate { ids.contains($0.id) }
         )
 
-        guard let models = try? context.fetch(descriptor) else {
-            return
-        }
-
+        let models = try context.fetch(descriptor)
         models.forEach { context.delete($0) }
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            throw error
+        }
     }
 }

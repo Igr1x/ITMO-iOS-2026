@@ -14,6 +14,7 @@ struct ScribeApp: App {
 
     private let container: ModelContainer
     private let calendarImportService: any CalendarImportService
+    private let noteContentRepository: any NoteContentRepository
 
     init() {
         var isUITesting = false
@@ -27,6 +28,12 @@ struct ScribeApp: App {
         }
         #endif
         calendarImportService = importService
+        if isUITesting {
+            let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+            noteContentRepository = FileNoteContentRepository(directory: directory)
+        } else {
+            noteContentRepository = FileNoteContentRepository()
+        }
 
         do {
             let configuration = ModelConfiguration(isStoredInMemoryOnly: isUITesting)
@@ -55,7 +62,8 @@ struct ScribeApp: App {
                 userDetailsRepo: userDetailsRepo,
                 notesSearchWorker: notesSearchWorker,
                 calendarRepository: CalendarEventRepository(container: container),
-                calendarImportService: calendarImportService
+                calendarImportService: calendarImportService,
+                noteContentRepository: noteContentRepository
             )
         }
     }

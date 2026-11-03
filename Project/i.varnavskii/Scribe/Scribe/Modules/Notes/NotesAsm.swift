@@ -8,25 +8,25 @@
 final class NotesAsm {
 
     static func build(
+        appRouter: AppRouter,
         notesRepo: NotesRepository,
         subjectRepo: SubjectRepository,
         notesSearchWorker: NotesSearchWorker,
-        onCreateNote: @escaping () -> Void
+        contentRepository: any NoteContentRepository
     ) -> NotesView {
 
         let interactor = NotesInteractor(
             notesRepo: notesRepo,
-            subjectRepo: subjectRepo
+            subjectRepo: subjectRepo,
+            contentRepository: contentRepository
         )
 
         let presenter = NotesPresenter(
             interactor: interactor,
-            notesSearchWorker: notesSearchWorker
+            notesSearchWorker: notesSearchWorker,
+            router: NotesRouter(appRouter: appRouter)
         )
 
-        return NotesView(
-            presenter: presenter,
-            onCreateNote: onCreateNote
-        )
+        return NotesView(presenter: presenter)
     }
 }

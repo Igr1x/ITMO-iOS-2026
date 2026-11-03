@@ -15,6 +15,7 @@ struct RootView: View {
     private let notesSearchWorker: NotesSearchWorker
     private let calendarRepository: CalendarEventRepository
     private let calendarImportService: any CalendarImportService
+    private let noteContentRepository: any NoteContentRepository
 
     @State private var homeRouter = AppRouter()
     @State private var notesRouter = AppRouter()
@@ -25,7 +26,8 @@ struct RootView: View {
         userDetailsRepo: UserDetailsRepository,
         notesSearchWorker: NotesSearchWorker,
         calendarRepository: CalendarEventRepository,
-        calendarImportService: any CalendarImportService = GoogleCalendarImportService()
+        calendarImportService: any CalendarImportService = GoogleCalendarImportService(),
+        noteContentRepository: any NoteContentRepository
     ) {
         self.notesRepo = notesRepo
         self.subjRepo = subjRepo
@@ -33,6 +35,7 @@ struct RootView: View {
         self.notesSearchWorker = notesSearchWorker
         self.calendarRepository = calendarRepository
         self.calendarImportService = calendarImportService
+        self.noteContentRepository = noteContentRepository
     }
 
     var body: some View {
@@ -54,12 +57,12 @@ struct RootView: View {
 
             NavigationStack(path: $notesRouter.path) {
                 NotesAsm.build(
+                    appRouter: notesRouter,
                     notesRepo: notesRepo,
                     subjectRepo: subjRepo,
-                    notesSearchWorker: notesSearchWorker
-                ) {
-                    notesRouter.navigate(to: .createNote)
-                }
+                    notesSearchWorker: notesSearchWorker,
+                    contentRepository: noteContentRepository
+                )
                 .navigationDestination(for: AppRoute.self) { route in
                     destination(for: route, router: notesRouter)
                 }
@@ -104,6 +107,8 @@ struct RootView: View {
                 appRouter: router,
                 subjectRepository: subjRepo
             )
+        case .editNote(let note):
+            EditNoteAsm.build(note: note, appRouter: router, contentRepository: noteContentRepository)
         }
     }
 }
