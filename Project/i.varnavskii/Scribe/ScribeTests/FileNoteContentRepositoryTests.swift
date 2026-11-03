@@ -49,7 +49,7 @@ final class FileNoteContentRepositoryTests: XCTestCase {
         let loaded = try await repository.load(noteID: noteID)
         XCTAssertEqual(loaded, "Исправленный вариант")
         let files = try FileManager.default.contentsOfDirectory(atPath: directory.path)
-        XCTAssertEqual(files, [noteID.uuidString + ".txt"])
+        XCTAssertEqual(files, [noteID.uuidString + ".md"])
     }
 
     func testDeleteRemovesOnlySelectedFiles() async throws {
@@ -68,7 +68,7 @@ final class FileNoteContentRepositoryTests: XCTestCase {
     func testInvalidUTF8IsReportedAsError() async throws {
         let noteID = UUID()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        let file = directory.appendingPathComponent(noteID.uuidString).appendingPathExtension("txt")
+        let file = directory.appendingPathComponent(noteID.uuidString).appendingPathExtension("md")
         try Data([0xFF, 0xFF]).write(to: file)
 
         do {
@@ -78,4 +78,82 @@ final class FileNoteContentRepositoryTests: XCTestCase {
             XCTAssertTrue(error is CocoaError)
         }
     }
+
+    func testLegacyTextFileIsStillReadable() async throws {
+        let noteID = UUID()
+        let legacy = try writeFile(Data("Старый конспект".utf8), noteID: noteID, format: "txt")
+
+        let loaded = try await repository.load(noteID: noteID)
+
+        XCTAssertEqual(loaded, "Старый конспект")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: legacy.path))
+    }
+
+    func testSaveMigratesLegacyFileAfterWritingMarkdown() async throws {
+        let noteID = UUID()
+        let legacy = try writeFile(Data("Старый текст".utf8), noteID: noteID, format: "txt")
+
+        try await repository.save("# Обновлённый конспект", noteID: noteID)
+
+        let markdown = directory.appendingPathComponent(noteID.uuidString).appendingPathExtension("md")
+        XCTAssertEqual(try String(contentsOf: markdown, encoding: .utf8), "# Обновлённый конспект")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: legacy.path))
+    }
+
+    func testEmptyMarkdownTakesPriorityOverLegacyText() async throws {
+        let noteID = UUID()
+        _ = try writeFile(Data("Старый текст".utf8), noteID: noteID, format: "txt")
+        _ = try writeFile(Data(), noteID: noteID, format: "md")
+
+        let loaded = try await repository.load(noteID: noteID)
+
+        XCTAssertEqual(loaded, "")
+    }
+
+    func testInvalidMarkdownDoesNotFallBackToLegacyFile() async throws {
+        let noteID = UUID()
+        _ = try writeFile(Data("Старый текст".utf8), noteID: noteID, format: "txt")
+        _ = try writeFile(Data([0xFF, 0xFF]), noteID: noteID, format: "md")
+
+        do {
+            _ = try await repository.load(noteID: noteID)
+            XCTFail("Ошибка чтения Markdown не должна скрываться старым текстом")
+        } catch {
+            XCTAssertTrue(error is CocoaError)
+        }
+    }
+
+    func testFailedMigrationPreservesLegacyFile() async throws {
+        let noteID = UUID()
+        let legacy = try writeFile(Data("Старый текст".utf8), noteID: noteID, format: "txt")
+        let markdown = directory.appendingPathComponent(noteID.uuidString).appendingPathExtension("md")
+        // Директория вместо файла заставляет запись завершиться ошибкой.
+        try FileManager.default.createDirectory(at: markdown, withIntermediateDirectories: true)
+
+        do {
+            try await repository.save("Новый текст", noteID: noteID)
+            XCTFail("Ожидалась ошибка записи")
+        } catch {
+            XCTAssertEqual(try String(contentsOf: legacy, encoding: .utf8), "Старый текст")
+        }
+    }
+
+    func testDeleteRemovesMarkdownAndLegacyFiles() async throws {
+        let noteID = UUID()
+        let legacy = try writeFile(Data("Старый текст".utf8), noteID: noteID, format: "txt")
+        let markdown = try writeFile(Data("# Новый текст".utf8), noteID: noteID, format: "md")
+
+        try await repository.delete(noteIDs: [noteID])
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: legacy.path))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: markdown.path))
+    }
+
+    private func writeFile(_ data: Data, noteID: UUID, format: String) throws -> URL {
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let url = directory.appendingPathComponent(noteID.uuidString).appendingPathExtension(format)
+        try data.write(to: url)
+        return url
+    }
+
 }

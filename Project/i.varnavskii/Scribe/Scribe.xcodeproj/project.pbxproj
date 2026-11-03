@@ -6,6 +6,10 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A31850D2B38C4006A6DA1001 /* Textual in Frameworks */ = {isa = PBXBuildFile; productRef = A31850D2B38C4006A6DA1002 /* Textual */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		63F10A25306E84F100D00148 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -51,6 +55,7 @@
 		63F10A14306E84F000D00148 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				A31850D2B38C4006A6DA1001 /* Textual in Frameworks */,
 			);
 		};
 		63F10A21306E84F100D00148 /* Frameworks */ = {
@@ -104,6 +109,9 @@
 				63F10A19306E84F000D00148 /* Scribe */,
 			);
 			name = Scribe;
+			packageProductDependencies = (
+				A31850D2B38C4006A6DA1002 /* Textual */,
+			);
 			productName = Scribe;
 			productReference = 63F10A17306E84F000D00148 /* Scribe.app */;
 			productType = "com.apple.product-type.application";
@@ -182,6 +190,9 @@
 			);
 			mainGroup = 63F10A0E306E84F000D00148;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A31850D2B38C4006A6DA1003 /* XCRemoteSwiftPackageReference "textual" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 63F10A18306E84F000D00148 /* Products */;
 			projectDirPath = "";
@@ -260,6 +271,25 @@
 			targetProxy = 63F10A2F306E84F100D00148 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A31850D2B38C4006A6DA1003 /* XCRemoteSwiftPackageReference "textual" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gonzalezreal/textual";
+			requirement = {
+				kind = exactVersion;
+				version = 0.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A31850D2B38C4006A6DA1002 /* Textual */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A31850D2B38C4006A6DA1003 /* XCRemoteSwiftPackageReference "textual" */;
+			productName = Textual;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
 		63F10A34306E84F100D00148 /* Debug configuration for PBXProject "Scribe" */ = {

@@ -9,14 +9,23 @@ import SwiftUI
 
 struct EditNoteView: View {
     @State var presenter: EditNotePresenter
+    @State private var showsPreview = false
+
+    init(presenter: EditNotePresenter) {
+        _presenter = State(initialValue: presenter)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            TextEditor(text: $presenter.text)
-                .font(.body)
-                .accessibilityLabel("Текст конспекта")
-                .accessibilityIdentifier("noteEditor.text")
-                .disabled(!presenter.isLoaded || presenter.isSaving)
+            Picker("Режим", selection: $showsPreview) {
+                Text("Редактор").tag(false)
+                Text("Просмотр").tag(true)
+            }
+            .pickerStyle(.segmented)
+            .disabled(!presenter.isLoaded || presenter.isSaving)
+            .accessibilityIdentifier("noteEditor.mode")
+
+            noteContent
                 .overlay {
                     if presenter.isLoading { ProgressView("Загрузка конспекта…") }
                 }
@@ -48,6 +57,19 @@ struct EditNoteView: View {
             }
             Button("Закрыть", role: .cancel) { presenter.errorMessage = nil }
         } message: { Text(presenter.errorMessage ?? "") }
+    }
+
+    @ViewBuilder
+    private var noteContent: some View {
+        if showsPreview {
+            MarkdownPreviewView(text: presenter.text)
+        } else {
+            TextEditor(text: $presenter.text)
+                .font(.body)
+                .accessibilityLabel("Текст конспекта в Markdown")
+                .accessibilityIdentifier("noteEditor.text")
+                .disabled(!presenter.isLoaded || presenter.isSaving)
+        }
     }
 
     @ToolbarContentBuilder

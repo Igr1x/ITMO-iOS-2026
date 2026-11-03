@@ -16,31 +16,43 @@ actor FileNoteContentRepository: NoteContentRepository {
     }
 
     func load(noteID: UUID) throws -> String {
-        do {
-            return try String(contentsOf: fileURL(noteID), encoding: .utf8)
-        } catch let error as CocoaError where error.code == .fileReadNoSuchFile || error.code == .fileNoSuchFile {
-            // Старые конспекты ещё не имеют файла с текстом.
-            return ""
-        }
+        // Новый формат имеет приоритет, даже если в нём пустой текст.
+        try readTextIfPresent(at: fileURL(noteID, format: "md"))
+            ?? readTextIfPresent(at: fileURL(noteID, format: "txt"))
+            ?? ""
     }
 
     func save(_ text: String, noteID: UUID) throws {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        // Атомарная запись заменяет файл целиком и не оставляет частично записанный текст.
-        try text.write(to: fileURL(noteID), atomically: true, encoding: .utf8)
+        // Старый файл удаляем только после успешной атомарной записи Markdown.
+        try text.write(to: fileURL(noteID, format: "md"), atomically: true, encoding: .utf8)
+        try removeFileIfPresent(at: fileURL(noteID, format: "txt"))
     }
 
     func delete(noteIDs: [UUID]) throws {
         for noteID in noteIDs {
-            do {
-                try FileManager.default.removeItem(at: fileURL(noteID))
-            } catch let error as CocoaError where error.code == .fileNoSuchFile {
-                continue
-            }
+            try removeFileIfPresent(at: fileURL(noteID, format: "md"))
+            try removeFileIfPresent(at: fileURL(noteID, format: "txt"))
         }
     }
 
-    private func fileURL(_ noteID: UUID) -> URL {
-        directory.appendingPathComponent(noteID.uuidString).appendingPathExtension("txt")
+    private func readTextIfPresent(at url: URL) throws -> String? {
+        do {
+            return try String(contentsOf: url, encoding: .utf8)
+        } catch let error as CocoaError where error.code == .fileReadNoSuchFile || error.code == .fileNoSuchFile {
+            return nil
+        }
+    }
+
+    private func removeFileIfPresent(at url: URL) throws {
+        do {
+            try FileManager.default.removeItem(at: url)
+        } catch let error as CocoaError where error.code == .fileNoSuchFile {
+            return
+        }
+    }
+
+    private func fileURL(_ noteID: UUID, format: String) -> URL {
+        directory.appendingPathComponent(noteID.uuidString).appendingPathExtension(format)
     }
 }
