@@ -63,6 +63,7 @@ struct NotesView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
+                    .accessibilityIdentifier("notes.createNote")
                 }
             }
         }

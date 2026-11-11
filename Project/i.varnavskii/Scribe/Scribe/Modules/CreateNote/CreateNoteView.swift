@@ -45,6 +45,7 @@ struct CreateNoteView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            .accessibilityIdentifier("createNote.subject")
 
             Button("Создать") {
                 presenter.saveButtonTapped(title: title)

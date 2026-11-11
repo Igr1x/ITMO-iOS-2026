@@ -33,6 +33,7 @@ struct HomePageView: View {
                 } label: {
                     Image(systemName: "plus")
                 }
+                .accessibilityIdentifier("home.createNote")
             }
         }
         .onAppear {
